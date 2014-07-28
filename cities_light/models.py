@@ -1,5 +1,3 @@
-
-
 import six
 import re
 
@@ -9,6 +7,9 @@ from django.utils.encoding import force_text
 from django.db.models import signals
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
 
 from unidecode import unidecode
 
@@ -179,11 +180,15 @@ class City(Base):
     longitude = models.DecimalField(max_digits=8, decimal_places=5,
         null=True, blank=True)
 
+    location = models.PointField(null=True, blank=True)
+
     region = models.ForeignKey(Region, blank=True, null=True)
     country = models.ForeignKey(Country)
     population = models.BigIntegerField(null=True, blank=True, db_index=True)
     feature_code = models.CharField(max_length=10, null=True, blank=True,
                                     db_index=True)
+
+    objects = models.GeoManager()
 
     class Meta(Base.Meta):
         unique_together = (('region', 'name'), ('region', 'slug'))
